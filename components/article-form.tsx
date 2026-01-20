@@ -1,9 +1,10 @@
 'use client';
 
+import { createClient } from "@/utils/supabase/client";
 import React from "react"
 
 import { useState, useEffect } from 'react';
-import { createBrowserClient } from '@supabase/ssr';
+// import { createBrowserClient } from '@supabase/ssr';
 
 interface Category {
   id: number;
@@ -45,10 +46,8 @@ export default function ArticleForm({ initialData, onSuccess }: ArticleFormProps
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+    const supabase = createClient();
+
       const { data } = await supabase.from('categories').select('*');
       setCategories(data || []);
     };
@@ -78,11 +77,7 @@ export default function ArticleForm({ initialData, onSuccess }: ArticleFormProps
     setSuccess('');
 
     try {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
-
+        const supabase = await createClient()
       if (initialData) {
         const { error: updateError } = await supabase
           .from('articles')

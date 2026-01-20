@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { createBrowserClient } from '@supabase/ssr';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { ArrowLeft } from 'lucide-react';
+import { createClient } from '@/utils/supabase/client';
 
 interface Category {
   id: number;
@@ -25,52 +25,73 @@ interface Article {
   published_at: string;
 }
 
-interface Params {
-  slug: string;
-}
-
-export default function CategoryPage({ params }: { params: Params }) {
+export default function CategoryPage({ 
+  params 
+}: { 
+  params: Promise<{ slug: string }> // ✅ Params is a Promise
+}) {
   const [category, setCategory] = useState<Category | null>(null);
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [slug, setSlug] = useState<string>(''); // ✅ Store unwrapped slug
 
+  // ✅ Unwrap params Promise first
   useEffect(() => {
+    params.then((resolvedParams) => {
+      setSlug(resolvedParams.slug);
+    });
+  }, [params]);
+
+  // ✅ Fetch data only when slug is available
+  useEffect(() => {
+    if (!slug) return; // Wait for slug to be set
+
     const fetchCategoryAndArticles = async () => {
       try {
-        const supabase = createBrowserClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        );
-
+        const supabase = createClient();
+        
         // Fetch category
-        const { data: categoryData } = await supabase
+        const { data: categoryData, error: categoryError } = await supabase
           .from('categories')
           .select('*')
-          .eq('slug', params.slug)
+          .eq('slug', slug) // ✅ Use unwrapped slug
           .single();
+
+        if (categoryError) {
+          console.error('Error fetching category:', categoryError);
+          setError(categoryError.message);
+          setLoading(false);
+          return;
+        }
 
         if (categoryData) {
           setCategory(categoryData);
 
           // Fetch articles in this category
-          const { data: articlesData } = await supabase
+          const { data: articlesData, error: articlesError } = await supabase
             .from('articles')
             .select('*')
             .eq('category_id', categoryData.id)
             .eq('status', 'published')
             .order('published_at', { ascending: false });
 
+          if (articlesError) {
+            console.error('Error fetching articles:', articlesError);
+          }
+
           setArticles(articlesData || []);
         }
       } catch (error) {
         console.error('Error fetching category:', error);
+        setError('Failed to load category');
       } finally {
         setLoading(false);
       }
     };
 
     fetchCategoryAndArticles();
-  }, [params.slug]);
+  }, [slug]); // ✅ Depend on slug
 
   if (loading) {
     return (
@@ -91,7 +112,7 @@ export default function CategoryPage({ params }: { params: Params }) {
     );
   }
 
-  if (!category) {
+  if (error || !category) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
@@ -101,7 +122,7 @@ export default function CategoryPage({ params }: { params: Params }) {
               Category Not Found
             </h1>
             <p className="text-muted-foreground mb-6">
-              The category you're looking for doesn't exist.
+              {error || "The category you're looking for doesn't exist."}
             </p>
             <Link href="/" className="text-primary hover:underline inline-flex items-center gap-2">
               <ArrowLeft size={18} />

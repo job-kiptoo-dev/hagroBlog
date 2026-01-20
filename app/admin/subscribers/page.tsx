@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createBrowserClient } from '@supabase/ssr';
+// import { createBrowserClient } from '@supabase/ssr';
 import { Trash2 } from 'lucide-react';
+import { createClient } from '@/utils/supabase/client';
 
 interface Subscriber {
   id: number;
@@ -21,10 +22,7 @@ export default function Subscribers() {
 
   const fetchSubscribers = async () => {
     try {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+        const supabase = createClient()
 
       const { data } = await supabase
         .from('newsletter_subscribers')
@@ -41,11 +39,12 @@ export default function Subscribers() {
     if (!confirm('Are you sure you want to remove this subscriber?')) return;
 
     try {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
-
+        const supabase = createClient()
+      // const supabase = createBrowserClient(
+      //   process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      //   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      // );
+      //
       const { error } = await supabase.from('newsletter_subscribers').delete().eq('id', id);
       if (error) throw error;
 
@@ -58,11 +57,12 @@ export default function Subscribers() {
 
   const toggleActive = async (id: number, active: boolean) => {
     try {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
-
+        const supabase = createClient()
+      // const supabase = createBrowserClient(
+      //   process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      //   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      // );
+      //
       const { error } = await supabase
         .from('newsletter_subscribers')
         .update({ active: !active })

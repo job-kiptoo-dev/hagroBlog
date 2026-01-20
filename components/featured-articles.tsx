@@ -1,9 +1,8 @@
 'use client';
-
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { createBrowserClient } from '@supabase/ssr';
+import { createClient } from '@/utils/supabase/client';
 
 interface Article {
   id: number;
@@ -19,39 +18,55 @@ interface Article {
 export default function FeaturedArticles() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const supabase = createBrowserClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        );
+useEffect(() => {
+  const fetchArticles = async () => {
+    try {
+      const supabase = createClient(); // ✅ Remove await!
+      
+      console.log('🔍 Supabase client:', supabase);
+      
+      const { data, error } = await supabase.from('articles')
+        .select('*')
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .limit(6);
 
-        const { data } = await supabase
-          .from('articles')
-          .select('*')
-          .eq('status', 'published')
-          .order('published_at', { ascending: false })
-          .limit(6);
+      console.log('📊 Query result:', { data, error });
 
-        setArticles(data || []);
-      } catch (error) {
-        console.error('Error fetching articles:', error);
-      } finally {
-        setLoading(false);
+      if (error) {
+        console.error('❌ Error:', error);
+        setError(error.message);
+        return;
       }
-    };
 
-    fetchArticles();
-  }, []);
+      setArticles(data || []);
+    } catch (error) {
+      console.error('💥 Exception:', error);
+      setError('Failed to load articles');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  fetchArticles();
+}, []);
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[...Array(6)].map((_, i) => (
           <div key={i} className="bg-muted animate-pulse rounded-lg h-64" />
         ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-destructive mb-2">Error loading articles</p>
+        <p className="text-sm text-muted-foreground">{error}</p>
       </div>
     );
   }

@@ -1,9 +1,8 @@
 'use client';
 
-import React from "react"
+import { createClient } from "@/utils/supabase/client";
 
 import { useState } from 'react';
-import { createBrowserClient } from '@supabase/ssr';
 
 export default function NewsletterSignup() {
   const [email, setEmail] = useState('');
@@ -17,10 +16,7 @@ export default function NewsletterSignup() {
     setMessage('');
 
     try {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+        const supabase = createClient()
 
       // Check if email already exists
       const { data: existing } = await supabase

@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { createBrowserClient } from '@supabase/ssr';
+// import { createBrowserClient } from '@supabase/ssr';
 import Link from 'next/link';
 import { Trash2, Edit, Plus } from 'lucide-react';
+import { createClient } from '@/utils/supabase/server';
 
 interface Article {
   id: number;
@@ -24,10 +25,7 @@ export default function AdminArticles() {
 
   const fetchArticles = async () => {
     try {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+        const supabase = createClient()
 
       const { data } = await supabase
         .from('articles')
@@ -44,10 +42,11 @@ export default function AdminArticles() {
     if (!confirm('Are you sure you want to delete this article?')) return;
 
     try {
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+        const supabase = createClient()
+      // const supabase = createBrowserClient(
+      //   process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      //   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      // );
 
       const { error } = await supabase.from('articles').delete().eq('id', id);
       if (error) throw error;

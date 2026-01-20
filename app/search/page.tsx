@@ -4,11 +4,11 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { createBrowserClient } from '@supabase/ssr';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import SearchBar from '@/components/search-bar';
 import Loading from './loading';
+import { createClient } from '@/utils/supabase/client';
 
 interface Article {
   id: number;
@@ -30,10 +30,11 @@ export default function SearchPage() {
     const performSearch = async () => {
       setLoading(true);
       try {
-        const supabase = createBrowserClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        );
+          const supabase = createClient();
+        // const supabase = createBrowserClient(
+        //   process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        //   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        // );
 
         const { data } = await supabase
           .from('articles')

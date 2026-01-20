@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { createBrowserClient } from '@supabase/ssr';
+// import { createBrowserClient } from '@supabase/ssr';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { ArrowLeft } from 'lucide-react';
+import { createClient } from '@/utils/supabase/client';
 
 interface Article {
   id: number;
@@ -32,10 +33,8 @@ export default function ArticlePage({ params }: { params: Params }) {
   useEffect(() => {
     const fetchArticle = async () => {
       try {
-        const supabase = createBrowserClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        );
+
+        const supabase = createClient()
 
         // Fetch the article
         const { data: articleData } = await supabase

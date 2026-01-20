@@ -17,7 +17,7 @@ export default function AdminLayout({
 
   const menuItems = [
     { href: '/admin', label: 'Articles', icon: FileText },
-    { href: '/admin/settings', label: 'Settings', icon: Settings },
+    // { href: '/admin/settings', label: 'Settings', icon: Settings },
     { href: '/admin/subscribers', label: 'Subscribers', icon: Mail },
   ];
 
