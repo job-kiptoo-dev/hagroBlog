@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 // import { createBrowserClient } from '@supabase/ssr';
 import Link from 'next/link';
 import { Trash2, Edit, Plus } from 'lucide-react';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/utils/supabase/client';
 
 interface Article {
   id: number;
