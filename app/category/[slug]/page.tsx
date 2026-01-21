@@ -28,22 +28,20 @@ interface Article {
 export default function CategoryPage({ 
   params 
 }: { 
-  params: Promise<{ slug: string }> // ✅ Params is a Promise
+  params: Promise<{ slug: string }>
 }) {
   const [category, setCategory] = useState<Category | null>(null);
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [slug, setSlug] = useState<string>(''); // ✅ Store unwrapped slug
+  const [slug, setSlug] = useState<string>(''); 
 
-  // ✅ Unwrap params Promise first
   useEffect(() => {
     params.then((resolvedParams) => {
       setSlug(resolvedParams.slug);
     });
   }, [params]);
 
-  // ✅ Fetch data only when slug is available
   useEffect(() => {
     if (!slug) return; // Wait for slug to be set
 
@@ -55,7 +53,7 @@ export default function CategoryPage({
         const { data: categoryData, error: categoryError } = await supabase
           .from('categories')
           .select('*')
-          .eq('slug', slug) // ✅ Use unwrapped slug
+          .eq('slug', slug) 
           .single();
 
         if (categoryError) {
@@ -91,7 +89,7 @@ export default function CategoryPage({
     };
 
     fetchCategoryAndArticles();
-  }, [slug]); // ✅ Depend on slug
+  }, [slug]);  
 
   if (loading) {
     return (

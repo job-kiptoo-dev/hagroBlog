@@ -23,7 +23,7 @@ interface Params {
 export default function EditArticle({ params }: { params: Params }) {
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null); // ✅ Add error state
+  const [error, setError] = useState<string | null>(null); 
   const router = useRouter();
 
   useEffect(() => {
@@ -32,13 +32,13 @@ export default function EditArticle({ params }: { params: Params }) {
         const supabase = createClient();
 
         
-        const { data, error } = await supabase // ✅ Capture error
+        const { data, error } = await supabase 
           .from('articles')
           .select('*')
           .eq('id', params.id)
           .single();
 
-        if (error) { // ✅ Handle error
+        if (error) { 
           console.error('Error fetching article:', error);
           setError(error.message);
           return;
@@ -47,7 +47,7 @@ export default function EditArticle({ params }: { params: Params }) {
         if (data) {
           setArticle(data);
         }
-      } catch (err) { // ✅ Catch any exceptions
+      } catch (err) { 
         console.error('Exception fetching article:', err);
         setError('Failed to load article');
       } finally {
@@ -66,7 +66,7 @@ export default function EditArticle({ params }: { params: Params }) {
     );
   }
 
-  if (error) { // ✅ Show error state
+  if (error) { 
     return (
       <div className="text-center py-12">
         <p className="text-destructive mb-4">{error}</p>

@@ -23,9 +23,9 @@ export default function FeaturedArticles() {
 useEffect(() => {
   const fetchArticles = async () => {
     try {
-      const supabase = createClient(); // ✅ Remove await!
+      const supabase = createClient(); 
       
-      console.log('🔍 Supabase client:', supabase);
+      // console.log('🔍 Supabase client:', supabase);
       
       const { data, error } = await supabase.from('articles')
         .select('*')
@@ -33,17 +33,17 @@ useEffect(() => {
         .order('published_at', { ascending: false })
         .limit(6);
 
-      console.log('📊 Query result:', { data, error });
+      // console.log('📊 Query result:', { data, error });
 
       if (error) {
-        console.error('❌ Error:', error);
+        console.error(' Error:', error);
         setError(error.message);
         return;
       }
 
       setArticles(data || []);
     } catch (error) {
-      console.error('💥 Exception:', error);
+      console.error('Exception:', error);
       setError('Failed to load articles');
     } finally {
       setLoading(false);
